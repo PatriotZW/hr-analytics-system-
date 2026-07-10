@@ -26,7 +26,7 @@ Does Not
 
 from enum import Enum
 from typing import Optional
-from typing import Optional
+
 
 class EmployeeStatus(Enum):
 
@@ -129,7 +129,7 @@ class Employee:
         Reconstructs an Employee object from stored dictionary data.
 
         Args:
-            dict: Dictionary with details to create an object.
+            data: Dictionary containing the stored employee data.
 
         Returns:
             Employee: Employee data suitable for object creation.

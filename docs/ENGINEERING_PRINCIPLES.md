@@ -99,3 +99,24 @@ Code reviewed
 Committed to Git
 
 Only then do we move to the next module.
+
+Engineering Principle #9
+
+Complete a module before moving to the next.
+
+Principle #10 — Consistency Over Cleverness
+
+When two domain objects solve the same type of problem, they should follow the same design unless there is a compelling business reason not to.
+
+Principle #11 — Reuse Decisions, Not Just Code
+
+Many people think reuse means copying code.
+
+Professional teams also reuse:
+
+architecture,
+naming conventions,
+documentation style,
+project structure,
+testing strategy.
+
