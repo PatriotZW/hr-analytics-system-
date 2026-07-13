@@ -120,3 +120,21 @@ documentation style,
 project structure,
 testing strategy.
 
+
+## Consistency Before Cleverness
+
+Lesson
+
+When two methods solve similar problems, prefer a consistent
+structure even if one could be written more compactly.
+
+Benefits
+
+- Easier to read
+- Easier to review
+- Easier to maintain
+- Predictable coding style
+
+Refactor only when a genuine abstraction becomes obvious.
+
+

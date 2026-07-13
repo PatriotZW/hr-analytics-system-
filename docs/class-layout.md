@@ -60,3 +60,51 @@ Serialization
 Representation
 ──────────────
 ✅ __str__()
+
+
+Company Module
+
+Foundation
+──────────
+□ Module docstring
+□ Imports
+□ Constants
+□ Company class
+
+Constructor
+───────────
+□ __init__()
+
+Validation
+──────────
+□ _validate_name()
+
+Properties
+──────────
+□ employees (read-only)
+□ departments (read-only)
+
+Behaviour
+─────────
+□ add_employee()
+□ remove_employee()
+
+□ add_department()
+□ remove_department()
+
+Queries
+───────
+□ find_employee_by_id()
+□ find_department_by_id()
+
+Representation
+──────────────
+□ __str__()
+
+Testing
+───────
+□ Unit tests
+
+Git
+───
+□ Fourth professional commit

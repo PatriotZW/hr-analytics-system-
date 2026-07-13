@@ -1,4 +1,3 @@
-
 """
 Department Module
 
