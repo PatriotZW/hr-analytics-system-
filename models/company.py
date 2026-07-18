@@ -290,6 +290,91 @@ class Company:
 
         return None
     
+    def to_dict(self) -> dict:
+        """
+        Converts the Company aggregate into a storage-friendly dictionary.
+
+        Returns:
+            dict:
+                Dictionary representation of the Company aggregate
+                suitable for persistence.
+        """
+        departments = []
+        employees = []
+        
+        for dept in self._departments:
+            departments.append(dept.to_dict())
+        
+        for emp in self._employees:
+            employees.append(emp.to_dict())
+        
+        return {
+            "company" : {"name": self.name,},
+            "departments" : departments,
+            "employees" : employees,
+           }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Company":
+        """
+        Reconstructs a Company aggregate from stored dictionary data.
+
+        Departments are restored before employees. Employees are then
+        registered using multiple passes so that manager relationships
+        can be resolved regardless of their order in storage.
+
+        Args:
+            data:
+                Storage-friendly dictionary containing company,
+                department and employee data.
+
+        Returns:
+            Company:
+                The fully reconstructed Company aggregate.
+
+        Raises:
+            ValueError:
+                If the remaining employee-manager relationships
+                cannot be resolved.
+        """
+        company_name = data["company"]["name"]
+        company = cls(company_name)
+
+        for department_data in data["departments"]:
+            department = Department.from_dict(department_data)
+            company.add_department(department)
+
+        pending_employees = []
+
+        for employee_data in data["employees"]:
+            employee = Employee.from_dict(employee_data)
+            pending_employees.append(employee)
+
+        while pending_employees:
+            progress_made = False
+            still_pending = []
+
+            for employee in pending_employees:
+                if employee.manager_id is None:
+                    company.add_employee(employee)
+                    progress_made = True
+
+                elif company.find_employee_by_id(employee.manager_id) is not None:
+                    company.add_employee(employee)
+                    progress_made = True
+
+                else:
+                    still_pending.append(employee)
+
+            if not progress_made:
+                raise ValueError(
+                    "The remaining manager relationships cannot be resolved."
+                )
+
+            pending_employees = still_pending
+
+        return company
+
     def deactivate_employee(self, employee_id: str) -> None:
         """
         Deactivates an employee if they exist and are currently active.

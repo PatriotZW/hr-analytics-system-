@@ -137,4 +137,128 @@ Benefits
 
 Refactor only when a genuine abstraction becomes obvious.
 
+## Make the Easy Thing the Correct Thing
 
+Lesson
+
+Classes should perform safe setup work internally
+when it is part of their responsibility.
+
+Example
+
+JsonStorage automatically creates parent directories
+before saving data.
+
+Reason
+
+Callers should not have to remember implementation
+details before using an object.
+
+## Complementary Methods Should Feel Symmetrical
+
+Lesson
+
+Methods that perform opposite operations should have
+matching, predictable interfaces.
+
+Example
+
+save(data)
+
+↓
+
+load()
+
+Benefits
+
+- Easier to learn
+- Easier to remember
+- Cleaner API
+
+
+## Tests Should Leave No Trace
+
+Lesson
+
+Unit tests should clean up after themselves.
+
+Prefer temporary files and directories over
+real project data.
+
+Benefits
+
+- Independent tests
+- Repeatable tests
+- No manual cleanup
+
+## One Behaviour Per Test
+
+Lesson
+
+A unit test should verify one observable behaviour.
+
+Reason
+
+When a test fails, the cause is immediately obvious.
+
+Benefits
+
+- Easier debugging
+- Better test names
+- Clearer intent
+
+
+## Test One Unit at a Time
+
+Lesson
+
+When testing one method,
+avoid relying on another method from the same class.
+
+Example
+
+Testing save()
+
+↓
+
+Verify using json.load()
+
+instead of
+
+storage.load()
+
+Reason
+
+A failing test should identify one method,
+not two.
+
+## Distinguish Commands from Queries
+
+Commands
+
+Perform work.
+
+Usually return None.
+
+Examples
+
+save()
+add_employee()
+deactivate()
+
+Queries
+
+Return information.
+
+Should not modify state.
+
+Examples
+
+load()
+find_employee_by_id()
+find_department_by_id()
+
+Reason
+
+Separating commands and queries
+makes APIs easier to understand.

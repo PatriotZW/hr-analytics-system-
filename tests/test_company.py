@@ -267,3 +267,172 @@ def test_company_string_representation():
     assert "Peck Solutions" in result
     assert "Departments : 0" in result
     assert "Employees   : 0" in result
+
+def test_from_dict_reconstructs_company():
+    data = {
+        "company": {
+            "name": "Peck Solutions",
+        },
+        "departments": [
+            {
+                "department_id": "DEP001",
+                "name": "Human Resources",
+                "status": "ACTIVE",
+            }
+        ],
+        "employees": [
+            {
+                "employee_id": "EMP1000",
+                "name": "John Smith",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": None,
+                "status": "ACTIVE",
+            }
+        ],
+    }
+
+    company = Company.from_dict(data)
+
+    assert company.name == "Peck Solutions"
+    assert len(company.departments) == 1
+    assert len(company.employees) == 1
+
+    department = company.find_department_by_id("DEP001")
+    employee = company.find_employee_by_id("EMP1000")
+
+    assert department is not None
+    assert department.name == "Human Resources"
+
+    assert employee is not None
+    assert employee.name == "John Smith"
+    assert employee.department_id == "DEP001"
+
+def test_from_dict_restores_employees_out_of_order():
+    data = {
+        "company": {
+            "name": "Peck Solutions",
+        },
+        "departments": [
+            {
+                "department_id": "DEP001",
+                "name": "Human Resources",
+                "status": "ACTIVE",
+            }
+        ],
+        "employees": [
+            {
+                "employee_id": "EMP1000",
+                "name": "John Smith",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": "EMP1002",
+                "status": "ACTIVE",
+            },
+
+            {
+                "employee_id": "EMP1001",
+                "name": "Peter Andre",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": "EMP1000",
+                "status": "ACTIVE",
+            },
+
+            {
+                "employee_id": "EMP1002",
+                "name": "Mary Jones",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": None,
+                "status": "ACTIVE",
+            }
+        ],
+    }
+
+
+    company = Company.from_dict(data)
+
+    assert company.name == "Peck Solutions"
+    assert len(company.departments) == 1
+    assert len(company.employees) == 3
+
+    department = company.find_department_by_id("DEP001")
+    john = company.find_employee_by_id("EMP1000")
+    peter = company.find_employee_by_id("EMP1001")
+    mary = company.find_employee_by_id("EMP1002")
+
+    assert department is not None
+    assert department.name == "Human Resources"
+
+    assert john is not None
+    assert peter is not None
+    assert mary is not None
+    
+    assert john.manager_id == "EMP1002"
+    assert peter.manager_id == "EMP1000"
+    assert mary.manager_id is None
+
+def test_from_dict_raises_value_error_for_circular_manager_relationships():
+    data = {
+        "company": {
+            "name": "Peck Solutions",
+        },
+        "departments": [
+            {
+                "department_id": "DEP001",
+                "name": "Human Resources",
+                "status": "ACTIVE",
+            }
+        ],
+        "employees": [
+            {
+                "employee_id": "EMP1000",
+                "name": "John Smith",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": "EMP1001",
+                "status": "ACTIVE",
+            },
+
+            {
+                "employee_id": "EMP1001",
+                "name": "Peter Andre",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": "EMP1000",
+                "status": "ACTIVE",
+            }
+
+            ]
+    }
+          
+    with pytest.raises(ValueError):
+        Company.from_dict(data)
+
+def test_from_dict_raises_value_error_for_missing_manager():
+    data = {
+        "company": {
+            "name": "Peck Solutions",
+        },
+        "departments": [
+            {
+                "department_id": "DEP001",
+                "name": "Human Resources",
+                "status": "ACTIVE",
+            }
+        ],
+        "employees": [
+            {
+                "employee_id": "EMP1000",
+                "name": "John Smith",
+                "department_id": "DEP001",
+                "salary": 2500,
+                "manager_id": "EMP9999",
+                "status": "ACTIVE",
+            }
+            ]
+    }
+          
+    with pytest.raises(ValueError):
+        Company.from_dict(data)

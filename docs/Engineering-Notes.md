@@ -260,3 +260,314 @@ protects its own state.
 Department
 
 protects its own state.
+
+## Git Commits Tell the Story
+
+Lesson
+
+A professional commit should describe the business capability
+or architectural milestone that was completed.
+
+Avoid
+
+- Updated files
+- Fixed bugs
+- Changes
+
+Prefer
+
+- Complete Company aggregate root implementation
+- Add employee serialization
+- Introduce reporting service
+
+Reason
+
+Months later, Git history becomes the project's timeline.
+
+## Prefer Higher-Level Abstractions
+
+Lesson
+
+Prefer higher-level objects provided by the standard library
+instead of manipulating primitive values directly.
+
+Example
+
+Use pathlib.Path
+
+instead of
+
+os.path + string concatenation.
+
+Reason
+
+Higher-level abstractions are easier to read,
+harder to misuse,
+and usually more portable.
+
+## Each Layer Speaks Its Own Language
+
+Lesson
+
+Each layer should operate on the data appropriate to its responsibility.
+
+Example
+
+Domain Layer
+- Employee
+- Department
+- Company
+
+Persistence Layer
+- dict
+- list
+- JSON
+
+Reason
+
+Keeping layers independent makes the system easier to
+maintain, test and extend.
+
+## Copy with Understanding
+
+Lesson
+
+Reusing existing code is good engineering.
+
+However, copied code must be reviewed as if it were
+newly written.
+
+Common things to check
+
+- Method signature
+- Docstrings
+- Type hints
+- Variable names
+- Error messages
+- Return type
+- Responsibilities
+
+Reason
+
+Most copy-and-paste bugs occur because one of these
+elements was not updated.
+
+## Normalize at the Boundary
+
+Accept multiple valid input types when it improves the API.
+
+Immediately normalize them into one internal representation.
+
+Example
+
+Accept:
+- str
+- pathlib.Path
+
+Store:
+- pathlib.Path
+
+Benefits
+- Simpler implementation
+- Consistent internal state
+- Fewer type checks
+
+## Command–Query Separation (CQS)
+
+Commands
+
+Perform work and usually return None.
+
+Examples
+- save()
+- add_employee()
+- deactivate()
+
+Queries
+
+Return information without modifying state.
+
+Examples
+- load()
+- find_employee_by_id()
+
+Reason
+
+Separating commands from queries produces
+clearer APIs and easier testing.
+
+## Test One Behaviour Per Test
+
+Each test should verify one observable behaviour.
+
+Benefits
+
+- Easier debugging
+- Clearer failures
+- Better test names
+
+## Use Private State Internally
+
+Lesson
+
+Methods inside a class should generally work directly
+with the class's private attributes.
+
+Public properties exist for other objects.
+
+Reason
+
+The class already owns its internal state and does not
+need to access it through its own public interface.
+
+Benefits
+
+- Simpler implementation
+- Avoids unnecessary indirection
+- Keeps public APIs for external callers
+
+
+## Coordinate Rather Than Duplicate
+
+Lesson
+
+Aggregate roots should coordinate work performed by
+their child objects rather than reimplementing it.
+
+Example
+
+Company.to_dict()
+
+↓
+
+Department.to_dict()
+
+Employee.to_dict()
+
+Reason
+
+Each object remains responsible for describing
+its own state.
+
+## Good Architecture Makes Code Smaller
+
+Lesson
+
+When each class has a single, well-defined responsibility,
+higher-level components often become surprisingly small.
+
+Example
+
+CompanyRepository.save()
+
+Validate Company
+
+↓
+
+Company.to_dict()
+
+↓
+
+JsonStorage.save()
+
+Reason
+
+Well-designed objects delegate work to the components
+that already own that responsibility.
+
+## Design Until the Implementation Becomes Obvious
+
+Lesson
+
+Before implementing a feature, continue refining the design
+until the code becomes straightforward.
+
+Indicators
+
+- Few conditional statements.
+- Small methods.
+- Clear responsibilities.
+- Minimal duplication.
+
+Reason
+
+Good design reduces implementation complexity rather than
+relying on clever code.
+
+# Engineering Philosophy
+
+The design becomes the focus.
+
+Well-designed software produces simple implementations.
+
+Spend more time deciding where code belongs than writing it.
+
+## Model the Business Before the Algorithm
+
+Lesson
+
+When solving a programming problem,
+first describe how a real person would solve it.
+
+Example
+
+Receptionist
+
+↓
+
+Waiting Area
+
+↓
+
+Managers arrive
+
+↓
+
+Recheck waiting employees
+
+↓
+
+If nobody can move,
+the paperwork is invalid.
+
+Reason
+
+Business processes often reveal the algorithm naturally.
+
+## Test Behaviour, Not Implementation
+
+Lesson
+
+A unit test should verify what the software is expected
+to do rather than how it achieves it.
+
+Example
+
+Instead of testing the waiting-room algorithm directly,
+test that employees are restored correctly regardless
+of their order in storage.
+
+Reason
+
+Implementation may change.
+
+Correct behaviour must not.
+
+Lesson
+
+When a lower-level component has comprehensive tests,
+higher-level tests should rely on its public behaviour
+rather than duplicate its verification.
+
+Example
+
+CompanyRepository.save()
+
+expected = company.to_dict()
+
+assert json_file == expected
+
+Reason
+
+Avoids duplicated assertions and keeps tests focused
+on each layer's responsibility.
