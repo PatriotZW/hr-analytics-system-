@@ -333,6 +333,16 @@ class Employee:
             "status": self.status.value,
             }
     
+    def change_salary(self, new_salary: float) -> None:
+
+        if self.status == EmployeeStatus.INACTIVE:
+            raise ValueError(
+                "Cannot change the salary of an inactive employee."
+            )
+
+        self._validate_salary(new_salary)
+
+        self.salary = new_salary
     
     def __str__(self) -> str:
         """

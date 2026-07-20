@@ -415,6 +415,63 @@ class Company:
 
         return None
     
+    def hire_employee(
+        self,
+        name: str,
+        department_id: str,
+        salary: float,
+        manager_id: str | None = None,
+    ) -> Employee:
+        employee = Employee(
+            name,
+            department_id,
+            salary,
+            manager_id,
+        )
+
+        self.add_employee(employee)
+
+        return employee
+
+    
+    def transfer_employee(
+        self,
+        employee_id: str,
+        department_id: str,
+    ) -> Employee:
+
+        employee = self.find_employee_by_id(employee_id)
+        department = self.find_department_by_id(department_id)
+
+        if department.status == DepartmentStatus.INACTIVE:
+            raise ValueError(
+                "Cannot transfer an employee to an inactive department."
+            )
+
+        if employee.department_id == department.department_id:
+            raise ValueError(
+                "Employee already belongs to this department."
+            )
+
+        employee.department_id = department.department_id
+
+        return employee
+    
+    def change_salary(
+        self,
+        employee_id: str,
+        new_salary: float
+    ) -> Employee:
+
+        employee = self.find_employee_by_id(employee_id)
+        
+        if employee.salary == new_salary :
+            raise ValueError(
+                "Employee already has this salary."
+            )
+        employee.change_salary(new_salary)
+
+        return employee
 
     def __str__(self) -> str:
         """

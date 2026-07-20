@@ -1,0 +1,152 @@
+ADR-001: Company is the Aggregate Root
+
+This was probably our first major decision.
+
+We agreed that:
+
+All external operations begin with Company.
+Company coordinates cross-entity business rules.
+Employee and Department own their own state.
+
+This decision has influenced:
+
+hire_employee()
+transfer_employee()
+change_salary()
+and our proposed assign_manager().
+ADR-002: Encapsulation of Entity State
+
+Remember when we changed:
+
+employees
+
+to:
+
+_employees
+
+and exposed:
+
+@property
+def employees(self) -> tuple[Employee, ...]:
+
+That wasn't just a refactor.
+
+It was an architectural decision:
+
+Internal collections remain mutable.
+
+External consumers receive read-only views.
+
+That protects our aggregate.
+
+ADR-003: Persistence Separation
+
+This came from our persistence deep dive.
+
+We agreed that:
+
+Company
+
+knows nothing about:
+
+JSON
+files
+storage
+
+while:
+
+JsonStorage
+
+knows nothing about:
+
+Employees
+Departments
+business rules
+
+The repository is the bridge.
+
+That was another architectural decision.
+
+ADR-004: Reconstruction Mirrors Persistence
+
+One of my favourite discussions.
+
+We concluded:
+
+Save
+
+Company
+↓
+
+to_dict()
+↓
+
+dictionary
+↓
+
+JSON
+
+is mirrored by:
+
+JSON
+↓
+
+dictionary
+↓
+
+from_dict()
+↓
+
+Company
+
+We also agreed each class reconstructs itself:
+
+Employee.from_dict()
+
+Department.from_dict()
+
+Company.from_dict()
+
+rather than Company rebuilding every object manually.
+
+ADR-005: Entity Owns State Changes
+
+This emerged naturally.
+
+Instead of:
+
+employee.salary = ...
+
+we agreed on:
+
+employee.change_salary(...)
+
+Later it became:
+
+employee.deactivate()
+
+employee.assign_manager(...)
+
+The principle became:
+
+The object that owns the state owns the mutation.
+
+ADR-006: Preserve Business Events
+
+This is the one we discovered today.
+
+Instead of:
+
+Leave Balance = 12
+
+we record:
+
++22 Entitlement
+
+-5 Annual Leave
+
++1 Adjustment
+
+and derive the balance.
+
+This is a brand-new architectural decision.

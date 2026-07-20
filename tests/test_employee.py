@@ -1,4 +1,7 @@
 from models.employee import Employee, EmployeeStatus
+from models.department import Department
+from models.company import Company
+import pytest
 
 
 def test_create_employee():
@@ -76,10 +79,63 @@ def test_manager_id_is_normalized():
 
     assert employee.manager_id == "EMP1000"
 
-import pytest
+
 
 def test_employee_id_is_immutable():
     employee = Employee("John Smith", "DEP001", 2500)
 
     with pytest.raises(AttributeError):
         employee.employee_id = "EMP9999"
+
+def test_change_employee_salary():
+    company = Company("Peck Solutions")
+
+    department = Department("Human Resources")
+    company.add_department(department)
+
+    employee = company.hire_employee(
+        "John Smith",
+        department.department_id,
+        2500,
+    )
+
+    employee.change_salary(3000)
+    
+    assert employee.salary ==3000
+
+def test_change_salary_rejects_inactive_employee():
+    company = Company("Peck Solutions")
+    department = Department("Human Resources")
+    company.add_department(department)
+
+    employee = company.hire_employee(
+        "John Smith",
+        department.department_id,
+        2500,
+    )
+    
+    company.deactivate_employee(employee_id=employee.employee_id)
+
+    with pytest.raises(
+        ValueError,
+        match="Cannot change the salary of an inactive employee.",
+    ):
+        employee.change_salary(3000)
+
+def test_change_salary_rejects_invalid_salary():
+    company = Company("Peck Solutions")
+    department = Department("Human Resources")
+    company.add_department(department)
+
+    employee = company.hire_employee(
+        name = "John Smith",
+        department_id = department.department_id,
+        salary = 2500,
+    )
+    new_salary = -3000
+
+    with pytest.raises(
+        ValueError,
+        match=f"Salary {new_salary} is zero or less",
+    ):
+        employee.change_salary(new_salary)

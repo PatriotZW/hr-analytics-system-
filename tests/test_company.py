@@ -436,3 +436,54 @@ def test_from_dict_raises_value_error_for_missing_manager():
           
     with pytest.raises(ValueError):
         Company.from_dict(data)
+
+
+def test_hire_employee_adds_and_returns_employee():
+    company = Company("Peck Solutions")
+
+    department = Department("Human Resources")
+    company.add_department(department)
+
+    employee = company.hire_employee(
+        "John Smith",
+        department.department_id,
+        2500,
+    )
+
+    assert employee in company.employees
+    assert employee.name == "John Smith"
+    assert employee.department_id == department.department_id
+    assert employee.salary == 2500
+
+def test_hire_employee_rejects_unknown_department():
+    company = Company("Peck Solutions")
+
+    with pytest.raises(ValueError):
+        company.hire_employee(
+            "John Smith",
+            "DEP999",
+            2500,
+        )
+
+
+def test_change_salary_and_returns_employee():
+    company = Company("Peck Solutions")
+
+    department = Department("Human Resources")
+    company.add_department(department)
+
+    employee = company.hire_employee(
+        "John Smith",
+        department.department_id,
+        2500,
+    )
+
+    new_salary = 5000
+    
+    updated_employee = company.change_salary(
+    employee_id=employee.employee_id,
+    new_salary=new_salary,
+    )
+
+    assert updated_employee.salary == new_salary
+    assert updated_employee is employee
