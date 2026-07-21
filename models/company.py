@@ -316,6 +316,7 @@ class Company:
 
     @classmethod
     def from_dict(cls, data: dict) -> "Company":
+        
         """
         Reconstructs a Company aggregate from stored dictionary data.
 
